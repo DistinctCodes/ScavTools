@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Tool } from './entities/tool.entity';
 import { CreateToolDto } from '../Tools/dto/tool.dto';
 import { UpdateToolDto } from '../Tools/dto/update-tool.dto';
+import { FilterToolsDto } from '../Tools/dto/filter-tools.dto'
 
 @Injectable()
 export class ToolService {
@@ -36,5 +37,22 @@ export class ToolService {
   async deleteTool(slug: string): Promise<void> {
     const result = await this.toolRepository.delete({ slug });
     if (result.affected === 0) throw new NotFoundException('Tool not found');
+  }
+
+   async findAllFiltered(filter: FilterToolsDto): Promise<Tool[]> {
+    const { type, tags } = filter;
+
+    const query = this.toolRepository.createQueryBuilder('tool');
+
+    if (type) {
+      query.andWhere('tool.type = :type', { type });
+    }
+
+    if (tags) {
+      const tagsArray = tags.split(',').map((tag) => tag.trim().toLowerCase());
+      query.andWhere('tool.tags && ARRAY[:...tagsArray]', { tagsArray });
+    }
+
+    return query.getMany();
   }
 }
