@@ -5,10 +5,10 @@ import {
   BadRequestException,
   Injectable,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { LoginDto } from './dto/login.dto';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { User } from './dto/create-user.dto';
+import { Login } from './dto/login.dto';
+import { RefreshToken } from './dto/refresh-token.dto';
+import { VerifyOtp } from './dto/verify-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { OtpService } from './otp.service';
 import { MailService } from './mail.service';
@@ -24,7 +24,7 @@ export class AuthService {
     private otpService: OtpService,
   ) {}
 
-  async register(dto: CreateUserDto) {
+  async register(dto: User) {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
     const user = await this.prisma.user.create({
       data: {
@@ -40,7 +40,7 @@ export class AuthService {
     return { message: 'Account created. Verification email sent.' };
   }
 
-  async login(dto: LoginDto) {
+  async login(dto: Login) {
     const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
     if (!user || !(await bcrypt.compare(dto.password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
@@ -70,7 +70,7 @@ export class AuthService {
   }
 
 
-async refreshToken(dto: RefreshTokenDto) {
+async refreshToken(dto: RefreshToken) {
   const { refreshToken } = dto;
 
   try {
@@ -109,7 +109,7 @@ async refreshToken(dto: RefreshTokenDto) {
 
 
 
-  async verifyEmail(dto: VerifyOtpDto) {
+  async verifyEmail(dto: VerifyOtp) {
     const valid = await this.otpService.verify(dto.email, dto.otp);
     if (!valid) throw new BadRequestException('Invalid OTP');
 

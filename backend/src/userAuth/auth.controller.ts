@@ -1,48 +1,48 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { LoginDto } from "./dto/login.dto";
-import { ResendOtpDto } from "./dto/resend-otp.dto";
-import { VerifyOtpDto } from "./dto/verify-otp.dto";
+import { User } from "./dto/create-user.dto";
+import { Login } from "./dto/login.dto";
+import { OtpResendLog } from "./dto/resend-otp.dto";
+import { VerifyOtp } from "./dto/verify-otp.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
-import { RefreshTokenDto } from "./dto/refresh-token.dto";
+import { RefreshToken } from "./dto/refresh-token.dto";
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('create')
-  register(@Body() dto: CreateUserDto) {
+  register(@Body() dto: User) {
     return this.authService.register(dto);
   }
 
   @Post('login')
-  login(@Body() dto: LoginDto) {
+  login(@Body() dto: Login) {
     return this.authService.login(dto);
   }
 
   @Post('resend-email/verification')
-  resendEmail(@Body() dto: ResendOtpDto) {
+  resendEmail(@Body() dto: OtpResendLog) {
     return this.authService.initiatePasswordReset(dto.email);
   }
 
   @Post('verify-email')
-  verifyEmail(@Body() dto: VerifyOtpDto) {
+  verifyEmail(@Body() dto: VerifyOtp) {
     return this.authService.verifyEmail(dto);
   }
 
   @Post('forget/password')
-  forgetPassword(@Body() dto: ResendOtpDto) {
+  forgetPassword(@Body() dto: OtpResendLog) {
     return this.authService.initiatePasswordReset(dto.email);
   }
 
   @Post('resend-forget/password')
-  resendForget(@Body() dto: ResendOtpDto) {
+  resendForget(@Body() dto: OtpResendLog) {
     return this.authService.initiatePasswordReset(dto.email);
   }
 
   @Post('verify/otp')
-  verifyOtp(@Body() dto: VerifyOtpDto) {
+  verifyOtp(@Body() dto: VerifyOtp) {
     return this.authService.verifyEmail(dto);
   }
 
@@ -52,7 +52,7 @@ export class AuthController {
   }
 
   @Post('refresh-token')
-  refreshToken(@Body() dto: RefreshTokenDto) {
+  refreshToken(@Body() dto: RefreshToken) {
     return this.authService.refreshToken(dto);
   }
 }
