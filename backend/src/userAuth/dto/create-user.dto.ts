@@ -19,9 +19,11 @@ export class User {
   @Column()
   password: string;
 
-  @Exclude()
   @Column({ nullable: true })
   refreshToken?: string;
+
+  @Column({ nullable: true })
+  profileImage?: string;
 
   @Column({ default: false })
   verified: boolean;
