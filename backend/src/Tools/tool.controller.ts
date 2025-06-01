@@ -7,11 +7,13 @@ import {
   Patch,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ToolService } from './tool.service';
 import { CreateToolDto } from '../Tools/dto/tool.dto';
 import { UpdateToolDto } from './dto/update-tool.dto';
 import { JwtAuthGuard } from '../userAuth/guards/jwt-auth.guard';
+import { FilterToolsDto } from '../Tools/dto/filter-tools.dto'
 
 @Controller('tools')
 @UseGuards(JwtAuthGuard)
@@ -42,4 +44,10 @@ export class ToolController {
   delete(@Param('slug') slug: string) {
     return this.toolService.deleteTool(slug);
   }
+
+   @Get()
+  findFiltered(@Query() filterDto: FilterToolsDto) {
+    return this.toolService.findAllFiltered(filterDto);
+  }
 }
+
