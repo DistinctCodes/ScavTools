@@ -13,7 +13,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { OtpService } from './otp.service';
 import { MailService } from './mail.service';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
