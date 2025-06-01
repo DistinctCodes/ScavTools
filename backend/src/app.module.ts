@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config'; // Import ConfigService
+import { ConfigModule, } from '@nestjs/config'; 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { createClient } from 'redis';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import { join } from 'path';
+import { User } from './userAuth/entities/user.entity';
+
 
 @Module({
   imports: [
@@ -20,7 +19,7 @@ import { join } from 'path';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      //entities: [User, Result, Leaderboard, Admin, SubAdmin],
+      entities: [User],
       migrations: ['src/migrations/*.ts'],
       synchronize: true,
       ssl:
