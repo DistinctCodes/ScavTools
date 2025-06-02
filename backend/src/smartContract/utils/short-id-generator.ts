@@ -1,8 +1,14 @@
-export function generateShortId(length = 8): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
+import { customAlphabet } from 'nanoid';
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
+export class ShortIdGenerator {
+  private readonly generator = customAlphabet(
+    '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+    8
+  );
+
+  generate(): string {
+    return this.generator();
   }
-  return result;
 }

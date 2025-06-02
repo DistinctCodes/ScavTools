@@ -1,10 +1,15 @@
 // src/dto/shorten-address.dto.ts
-import { IsEthereumAddress, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, validate } from 'class-validator';
+import { StarknetAddressValidator } from '../utils/starknet-address.validator';
 
 export class ShortenAddressDto {
   @IsNotEmpty()
-  @IsEthereumAddress()
   address: string;
+
+  async isValid(): Promise<boolean> {
+    const validator = new StarknetAddressValidator();
+    return validator.validate(this.address);
+  }
 }
 
 export class ShortenAddressResponseDto {
