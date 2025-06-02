@@ -55,4 +55,9 @@ export class ToolService {
 
     return query.getMany();
   }
+
+  async findOne(id: string): Promise<Tool> {
+  return this.toolRepository.findOne({ where: { id } });
+}
+
 }
