@@ -19,3 +19,12 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+
+model ShortenedAddress {
+  id        String   @id @default(cuid())
+  shortId   String   @unique
+  originalAddress String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+}
