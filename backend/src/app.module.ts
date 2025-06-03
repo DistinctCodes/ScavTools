@@ -11,6 +11,7 @@ import { AuthService } from './userAuth/auth.service';
 import { MailService } from './userAuth/mail.service';
 import { OtpService } from './userAuth/otp.service';
 import { ToolModule } from './Tools/tool.module';
+import { PdfModule } from './pdf/pdf.module';
 
 @Module({
 	imports: [
@@ -21,6 +22,7 @@ import { ToolModule } from './Tools/tool.module';
 			secret: process.env.JWT_SECRET || 'default_secret',
 			signOptions: { expiresIn: '1d' },
 		}),
+		PdfModule,
 		TypeOrmModule.forRoot({
 			type: 'postgres',
 			host: process.env.DB_HOST,
