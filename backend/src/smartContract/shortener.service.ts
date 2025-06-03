@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { ShortenAddressDto, ShortenAddressResponseDto, ResolveAddressResponseDto } from './dto/shorten-address.dto';
 import { ShortIdGenerator } from './utils/short-id-generator';
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { StarknetAddressValidator } from './utils/starknet-address.validator';
 
 @Injectable()
