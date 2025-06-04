@@ -1,74 +1,69 @@
 import {
-  Controller,
-  Post,
-  Get,
-  Param,
-  Body,
-  Patch,
-  Delete,
-  UseGuards,
-  Query,
-  Req,
+	Controller,
+	Post,
+	Get,
+	Param,
+	Body,
+	Patch,
+	Delete,
+	UseGuards,
+	Query,
+	Req,
 } from '@nestjs/common';
 import { ToolService } from './tool.service';
-import { CreateToolDto } from '../Tools/dto/tool.dto';
+import { CreateToolDto } from './dto/tool.dto';
 import { UpdateToolDto } from './dto/update-tool.dto';
 import { JwtAuthGuard } from '../userAuth/guards/jwt-auth.guard';
-import { FilterToolsDto } from '../Tools/dto/filter-tools.dto';
-import { ToolAccessLogService } from '../Tools/tool-access-log.service'
+import { FilterToolsDto } from './dto/filter-tools.dto';
+import { ToolAccessLogService } from './tool-access-log.service';
+import { Tool } from '@prisma/client';
 
 @Controller('tools')
 @UseGuards(JwtAuthGuard)
 export class ToolController {
-  constructor(
-    private readonly toolService: ToolService,
-    private readonly toolAccessLogService: ToolAccessLogService,
-  ) {}
+	constructor(
+		private readonly toolService: ToolService,
+		private readonly toolAccessLogService: ToolAccessLogService
+	) {}
 
-  @Post()
-  create(@Body() dto: CreateToolDto) {
-    return this.toolService.createTool(dto);
-  }
+	@Post()
+	create(@Body() dto: CreateToolDto) {
+		return this.toolService.createTool(dto);
+	}
 
-  @Get()
-  getAll() {
-    return this.toolService.getAllTools();
-  }
+	@Get()
+	getAll() {
+		return this.toolService.getAllTools();
+	}
 
-  @Get(':slug')
-  getBySlug(@Param('slug') slug: string) {
-    return this.toolService.getToolBySlug(slug);
-  }
+	@Get('filtered')
+	findFiltered(@Query() filterDto: FilterToolsDto) {
+		return this.toolService.findAllFiltered(filterDto);
+	}
 
-  @Patch(':slug')
-  update(@Param('slug') slug: string, @Body() dto: UpdateToolDto) {
-    return this.toolService.updateTool(slug, dto);
-  }
+	@Get(':slug')
+	getBySlug(@Param('slug') slug: string) {
+		return this.toolService.getToolBySlug(slug);
+	}
 
-  @Delete(':slug')
-  delete(@Param('slug') slug: string) {
-    return this.toolService.deleteTool(slug);
-  }
+	@Patch(':slug')
+	update(@Param('slug') slug: string, @Body() dto: UpdateToolDto) {
+		return this.toolService.updateTool(slug, dto);
+	}
 
-   @Get()
-  findFiltered(@Query() filterDto: FilterToolsDto) {
-    return this.toolService.findAllFiltered(filterDto);
-  }
+	@Delete(':slug')
+	delete(@Param('slug') slug: string) {
+		return this.toolService.deleteTool(slug);
+	}
 
-  @Get(':id')
-@UseGuards(JwtAuthGuard)
-async getTool(
-  @Param('id') id: string,
-  @Req() req: any,
-): Promise<CreateToolDto> {
- const tool = await this.toolService.findOne(id)
-const user = req.user;
+	@Get('access/:id')
+	@UseGuards(JwtAuthGuard)
+	async getTool(@Param('id') id: string, @Req() req: any): Promise<Tool> {
+		const tool = await this.toolService.findOne(id);
+		const user = req.user;
 
-await this.toolAccessLogService.logAccess(user, tool);
+		await this.toolAccessLogService.logAccess(user, tool);
 
-return tool;
-
+		return tool;
+	}
 }
-
-}
-
