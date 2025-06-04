@@ -1,9 +1,8 @@
-// src/user/user.service.ts
 import { Injectable, BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import * as bcrypt from 'bcrypt';
-import { PrismaService } from 'prisma/prisma.service'; 
+import { PrismaService } from '../../prisma/prisma.service'; 
 import { User } from './dto/create-user.dto'; 
 
 @Injectable()
