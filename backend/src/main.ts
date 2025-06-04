@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { ValidationPipe, BadRequestException } from '@nestjs/common';
+import { AuthExceptionFilter } from 'common/filters/auth-exception.filter';
 
 dotenv.config();
 
@@ -59,6 +60,7 @@ async function bootstrap() {
 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
 		allowedHeaders: ['Content-Type', 'Authorization'],
 	});
+	app.useGlobalFilters(new AuthExceptionFilter());
 	app.setGlobalPrefix('api/v1');
 	await app.listen(process.env.PORT ?? 3000);
 }
