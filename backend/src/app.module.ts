@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { UserProfileService } from './userAuth/user.profile.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -12,6 +11,7 @@ import { MailService } from './userAuth/mail.service';
 import { OtpService } from './userAuth/otp.service';
 import { ToolModule } from './Tools/tool.module';
 import { PdfModule } from './pdf/pdf.module';
+import { ShortenerModule } from './smartContract/shortener.module';
 
 @Module({
 	imports: [
@@ -23,25 +23,8 @@ import { PdfModule } from './pdf/pdf.module';
 			signOptions: { expiresIn: '1d' },
 		}),
 		PdfModule,
-		TypeOrmModule.forRoot({
-			type: 'postgres',
-			host: process.env.DB_HOST,
-			port: Number(process.env.DB_PORT) || 5432,
-			username: process.env.DB_USERNAME,
-			password: process.env.DB_PASSWORD,
-			database: process.env.DB_NAME,
-			autoLoadEntities: true,
-			entities: [__dirname + '/**/*.entity{.ts}'],
-			migrations: ['src/migrations/*.ts'],
-			synchronize: true,
-			ssl:
-				process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
-			extra: {
-				ssl:
-					process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
-			},
-		}),
 		ToolModule,
+		ShortenerModule,
 	],
 	controllers: [UserProfileController, AuthController],
 	providers: [
