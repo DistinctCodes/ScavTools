@@ -7,10 +7,16 @@ import {
 	Logger,
 	ValidationPipe,
 	UsePipes,
+	UseGuards,
+	Req,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { PdfService } from '../services/pdf.service';
 import { GeneratePdfDto } from '../dto/generate-pdf.dto';
+import {
+	AuthenticatedRequest,
+	JwtAuthGuard,
+} from 'src/userAuth/guards/jwt-auth.guard';
 
 @Controller('pdf')
 export class PdfController {
@@ -19,10 +25,12 @@ export class PdfController {
 	constructor(private readonly pdfService: PdfService) {}
 
 	@Post('generate')
+	@UseGuards(JwtAuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 	async generatePdf(
 		@Body() generatePdfDto: GeneratePdfDto,
-		@Res() res: Response
+		@Res() res: Response,
+		@Req() req: AuthenticatedRequest
 	) {
 		try {
 			// Validate that exactly one field is provided
