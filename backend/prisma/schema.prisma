@@ -23,6 +23,7 @@ model User {
   toolAccessLogs     ToolAccessLog[]
   shortenedAddresses ShortenedAddress[]
   pdfGenerationLogs  PdfGenerationLog[]
+  rateLimitViolations RateLimitViolation[] 
 
   @@map("user")
 }
@@ -130,4 +131,24 @@ model PdfGenerationLog {
   @@index([createdAt])
   @@index([inputType])
   @@map("pdf_generation_log")
+}
+
+model RateLimitViolation {
+  id           String   @id @default(uuid())
+  userId       String?
+  ipAddress    String   @db.VarChar(45) // IPv6 compatible
+  userAgent    String?  @db.VarChar(255)
+  endpoint     String   @db.VarChar(100) // e.g., '/pdf/generate'
+  requestCount Int      // Number of requests that triggered the violation
+  windowStart  DateTime // Start of the rate limit window
+  violatedAt   DateTime @default(now())
+  
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  @@index([userId])
+  @@index([ipAddress])
+  @@index([violatedAt])
+  @@index([endpoint])
+  @@map("rate_limit_violation")
 }
