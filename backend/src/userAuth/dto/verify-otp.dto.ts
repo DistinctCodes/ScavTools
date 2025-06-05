@@ -1,22 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+import { IsEmail, IsString } from 'class-validator';
 
-@Entity('otp_verifications')
 export class VerifyOtp {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+	@IsEmail()
+	email: string;
 
-  @Column()
-  email: string;
-
-  @Column()
-  otp: string;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @Column({ type: 'timestamp' })
-  expiresAt: Date;
-
-  @Column({ default: false })
-  isUsed: boolean;
+	@IsString()
+	otp: string;
 }

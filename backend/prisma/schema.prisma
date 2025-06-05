@@ -14,17 +14,87 @@ model User {
   email        String   @unique
   password     String
   refreshToken String? 
-  profileImage String?  // ✅ Add this line
+  profileImage String?
   verified     Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  // Relations
+  toolAccessLogs     ToolAccessLog[]
+  shortenedAddresses ShortenedAddress[]
+
+  @@map("user")
 }
 
 model ShortenedAddress {
-  id        String   @id @default(cuid())
-  shortId   String   @unique
-  originalAddress String
+  id              String    @id @default(uuid())
+  shortId         String    @unique @db.VarChar(50)
+  originalAddress String    @db.VarChar(255)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  expiresAt       DateTime?
+  userId          String
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([shortId])
+  @@index([originalAddress])
+  @@map("shortened_address")
+}
+
+enum ToolType {
+  FRONTEND
+  BACKEND
+  WEB3
+}
+
+model Tool {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String   @db.Text
+  type        ToolType
+  tags        String[]
+  iconUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  accessLogs ToolAccessLog[]
+
+  @@map("tool")
+}
+
+model ToolAccessLog {
+  id         String   @id @default(uuid())
+  userId     String
+  toolId     String
+  accessedAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool Tool @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@map("tool_access_log")
+}
+
+model OtpVerification {
+  id        String   @id @default(uuid())
+  email     String
+  otp       String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId    String
+  expiresAt DateTime
+  isUsed    Boolean  @default(false)
+
+  @@map("otp_verification")
+}
+
+model OtpResendLog {
+  id          String   @id @default(uuid())
+  email       String
+  requestedAt DateTime @default(now())
+  success     Boolean  @default(false)
+
+  @@map("otp_resend_log")
 }

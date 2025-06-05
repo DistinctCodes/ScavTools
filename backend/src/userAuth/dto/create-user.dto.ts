@@ -1,36 +1,29 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, BeforeInsert } from 'typeorm';
-import { Exclude } from 'class-transformer';
+import {
+	IsString,
+	IsEmail,
+	MinLength,
+	MaxLength,
+	IsOptional,
+} from 'class-validator';
 
-@Entity('users')
 export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+	@IsString()
+	@MaxLength(50)
+	firstName: string;
 
-  @Column({ length: 50 })
-  firstName: string;
+	@IsString()
+	@MaxLength(50)
+	lastName: string;
 
-  @Column({ length: 50 })
-  lastName: string;
+	@IsEmail()
+	email: string;
 
-  @Column({ unique: true })
-  email: string;
+	@IsString()
+	@MinLength(8)
+	@MaxLength(32)
+	password: string;
 
-  @Exclude()
-  @Column()
-  password: string;
-
-  @Column({ nullable: true })
-  refreshToken?: string;
-
-  @Column({ nullable: true })
-  profileImage?: string;
-
-  @Column({ default: false })
-  verified: boolean;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
+	@IsOptional()
+	@IsString()
+	profileImage?: string;
 }

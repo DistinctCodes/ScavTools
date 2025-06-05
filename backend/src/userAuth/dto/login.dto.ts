@@ -1,14 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { IsEmail, IsString } from 'class-validator';
 
-@Entity('users')
 export class Login {
-  @PrimaryGeneratedColumn('uuid') 
-  id: string;
+	@IsEmail()
+	email: string;
 
-  @Column({ unique: true })
-  email: string;
-
-  @Column()
-  password: string;
-
+	@IsString()
+	password: string;
 }

@@ -1,12 +1,17 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { ToolType } from '../entities/tool.entity';
+
+export enum ToolType {
+	FRONTEND = 'FRONTEND',
+	BACKEND = 'BACKEND',
+	WEB3 = 'WEB3',
+}
 
 export class FilterToolsDto {
-  @IsEnum(ToolType)
-  @IsOptional()
-  type?: ToolType;
+	@IsEnum(ToolType)
+	@IsOptional()
+	type?: ToolType;
 
-  @IsString()
-  @IsOptional()
-  tags?: string;
+	@IsString()
+	@IsOptional()
+	tags?: string;
 }

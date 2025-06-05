@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional, IsString, IsArray, ArrayNotEmpty } from 'class-validator';
-import { ToolType } from '../entities/tool.entity';
+import { ToolType } from './filter-tools.dto';
 
 export class CreateToolDto {
   @IsString()

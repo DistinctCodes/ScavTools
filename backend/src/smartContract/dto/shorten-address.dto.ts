@@ -1,24 +1,23 @@
-// src/dto/shorten-address.dto.ts
-import { IsNotEmpty, validate } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 import { StarknetAddressValidator } from '../utils/starknet-address.validator';
 
 export class ShortenAddressDto {
-  @IsNotEmpty()
-  address: string;
+	@IsNotEmpty()
+	address: string;
 
-  async isValid(): Promise<boolean> {
-    const validator = new StarknetAddressValidator();
-    return validator.validate(this.address);
-  }
+	async isValid(): Promise<boolean> {
+		const validator = new StarknetAddressValidator();
+		return validator.validate(this.address);
+	}
 }
 
 export class ShortenAddressResponseDto {
-  shortId: string;
-  originalAddress: string;
-  createdAt: Date;
+	shortId: string;
+	originalAddress: string;
+	createdAt: Date;
 }
 
 export class ResolveAddressResponseDto {
-  originalAddress: string;
-  shortId: string;
+	originalAddress: string;
+	shortId: string;
 }

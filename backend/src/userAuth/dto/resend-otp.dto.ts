@@ -1,16 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+import { IsEmail } from 'class-validator';
 
-@Entity('otp_resend_logs')
 export class OtpResendLog {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column()
-  email: string;
-
-  @CreateDateColumn()
-  requestedAt: Date;
-
-  @Column({ default: false })
-  success: boolean;
+	@IsEmail()
+	email: string;
 }
