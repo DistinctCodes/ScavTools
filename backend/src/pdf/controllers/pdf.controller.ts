@@ -20,6 +20,8 @@ import {
 	JwtAuthGuard,
 } from 'src/userAuth/guards/jwt-auth.guard';
 import { PdfLogService } from '../services/pdf-log.service';
+import { RateLimitService } from '../services/rate-limit.service';
+import { PdfRateLimitGuard } from '../guards/rate-limit.guard';
 import { PdfInputType } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -29,11 +31,12 @@ export class PdfController {
 
 	constructor(
 		private readonly pdfService: PdfService,
-		private readonly pdfLogService: PdfLogService
+		private readonly pdfLogService: PdfLogService,
+		private readonly rateLimitService: RateLimitService
 	) {}
 
 	@Post('generate')
-	@UseGuards(JwtAuthGuard)
+	@UseGuards(JwtAuthGuard, PdfRateLimitGuard)
 	@UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 	async generatePdf(
 		@Body() generatePdfDto: GeneratePdfDto,
@@ -56,10 +59,8 @@ export class PdfController {
 		let inputSize: number;
 
 		try {
-			// Validate that exactly one field is provided
 			generatePdfDto.validate();
 
-			// Determine input type and content
 			if (generatePdfDto.html) {
 				inputType = PdfInputType.HTML;
 				inputContent = generatePdfDto.html;
@@ -95,6 +96,7 @@ export class PdfController {
 					`Pages: ${result!.metadata.pages}, Time: ${processingTime}ms`
 			);
 
+			// Log successful generation
 			await this.pdfLogService.logPdfGeneration({
 				userId,
 				inputType,
@@ -109,6 +111,7 @@ export class PdfController {
 				requestId,
 			});
 
+			// Set response headers
 			res.set({
 				'Content-Type': 'application/pdf',
 				'Content-Length': result!.metadata.size.toString(),
@@ -128,6 +131,7 @@ export class PdfController {
 				error.stack
 			);
 
+			// Log failed generation
 			await this.pdfLogService.logPdfGeneration({
 				userId,
 				inputType: inputType!,
@@ -144,6 +148,7 @@ export class PdfController {
 				requestId,
 			});
 
+			// Return appropriate error response
 			if (
 				error.message.includes('required') ||
 				error.message.includes('Provide either')
@@ -181,7 +186,7 @@ export class PdfController {
 		@Req() req: AuthenticatedRequest,
 		@Query('days') days?: string
 	) {
-		const userId = req.user.id;
+		const userId = req.user.userId;
 		const daysParsed = days ? parseInt(days, 10) : 30;
 
 		if (daysParsed < 1 || daysParsed > 365) {
@@ -273,10 +278,38 @@ export class PdfController {
 		}
 	}
 
-	/**
-	 * Safe snippet of input content for logging
-	 * Removes potential sensitive information and limits length
-	 */
+	@Get('analytics/rate-limits')
+	@UseGuards(JwtAuthGuard)
+	async getRateLimitStats(@Query('days') days?: string) {
+		// Add admin guard here if needed
+
+		const daysParsed = days ? parseInt(days, 10) : 7;
+
+		if (daysParsed < 1 || daysParsed > 30) {
+			return {
+				error: 'Days parameter must be between 1 and 30',
+				statusCode: HttpStatus.BAD_REQUEST,
+			};
+		}
+
+		try {
+			const rateLimitStats =
+				await this.rateLimitService.getRateLimitStats(daysParsed);
+			return {
+				data: rateLimitStats,
+				period: `${daysParsed} days`,
+				statusCode: HttpStatus.OK,
+			};
+		} catch (error) {
+			this.logger.error('Failed to fetch rate limit statistics', error.stack);
+			return {
+				error: 'Failed to fetch rate limit statistics',
+				message: 'An error occurred while retrieving rate limit data',
+				statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+			};
+		}
+	}
+
 	private createSafeInputSnippet(content: string): string {
 		let safe = content
 			.replace(
